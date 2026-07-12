@@ -62,6 +62,9 @@ function refreshRecipientsFeedback() {
   if (valid.length) parts.push(`<span class="ok">${valid.length} valid recipient${valid.length === 1 ? '' : 's'}</span>`);
   if (invalid.length) parts.push(`<span class="invalid">Invalid: ${invalid.map(escapeHtml).join(', ')}</span>`);
   el('recipients-feedback').innerHTML = parts.join(' · ');
+  const badge = el('send-count');
+  badge.hidden = valid.length === 0;
+  badge.textContent = String(valid.length);
   refreshSendButtons();
 }
 
@@ -117,10 +120,27 @@ function showReport({ results, aborted, remaining }) {
 }
 
 function setFormLocked(locked) {
-  el('composer-form').querySelectorAll('input, textarea, select').forEach((field) => {
+  el('composer-form').querySelectorAll('input, textarea, select, .swatch').forEach((field) => {
     field.disabled = locked;
   });
   el('recipients').disabled = locked;
+}
+
+function bindSwatches() {
+  const colorInput = el('brand-color');
+  const syncSelection = () => {
+    document.querySelectorAll('.swatch[data-color]').forEach((btn) => {
+      btn.classList.toggle('sel', btn.dataset.color.toLowerCase() === colorInput.value.toLowerCase());
+    });
+  };
+  document.querySelectorAll('.swatch[data-color]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      colorInput.value = btn.dataset.color;
+      colorInput.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  });
+  colorInput.addEventListener('input', syncSelection);
+  syncSelection();
 }
 
 async function runSend(recipients) {
@@ -190,6 +210,7 @@ function init() {
 
   bindAuth();
   bindSend();
+  bindSwatches();
 
   updatePreview(readModel());
   refreshRecipientsFeedback();

@@ -1,104 +1,169 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DaScout Emailing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"
+        integrity="sha384-XGjxtQfXaH2tnPFa9x+ruJTuLE3Aa6LhHSWRr1XeTyhezb4abCG4ccI5AkVDxqC+" crossorigin="anonymous">
   <link rel="stylesheet" href="css/styles.css">
+  <!-- GIS cannot be SRI-pinned: Google rotates this script continuously (documented exception). -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-  <header class="topbar">
-    <h1>DaScout Emailing</h1>
+  <nav class="navbar bg-body border-bottom px-3 py-2 flex-shrink-0">
+    <span class="navbar-brand d-flex align-items-center gap-2 fw-bold mb-0 fs-6">
+      <i class="bi bi-send text-primary" aria-hidden="true"></i>
+      DaScout Emailing
+    </span>
     <div class="auth-area">
-      <span id="user-email" class="user-email" hidden></span>
-      <button id="signin-btn" type="button">Sign in with Google</button>
-      <button id="signout-btn" type="button" hidden>Sign out</button>
+      <span id="user-email" class="badge rounded-pill text-bg-light border fw-normal" hidden></span>
+      <button id="signin-btn" type="button" class="btn btn-primary btn-sm">
+        <i class="bi bi-google me-1" aria-hidden="true"></i>Sign in with Google
+      </button>
+      <button id="signout-btn" type="button" class="btn btn-outline-secondary btn-sm rounded-pill" hidden>Sign out</button>
     </div>
-  </header>
+  </nav>
 
-  <main class="layout">
-    <section class="panel form-panel" aria-label="Email composer">
-      <h2>Compose</h2>
-      <form id="composer-form" autocomplete="off">
-        <label for="subject">Subject</label>
-        <input id="subject" type="text" maxlength="200" placeholder="Your July offer is here">
+  <div class="studio">
+    <aside class="workspace border-end bg-body">
+      <ul class="nav nav-tabs nav-fill px-3 pt-2 flex-shrink-0" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pane-content" type="button" role="tab" aria-selected="true">Content</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pane-branding" type="button" role="tab" aria-selected="false">Branding</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pane-send" type="button" role="tab" aria-selected="false">
+            Send <span id="send-count" class="badge rounded-pill text-bg-primary" hidden></span>
+          </button>
+        </li>
+      </ul>
 
-        <fieldset>
-          <legend>Branding</legend>
-          <label for="logo-file">Logo image</label>
-          <input id="logo-file" type="file" accept="image/png,image/jpeg,image/gif">
-          <span id="logo-status" class="file-status">No logo selected</span>
+      <form id="composer-form" class="tab-content workspace-scroll p-3" autocomplete="off">
+        <section class="tab-pane fade show active" id="pane-content" role="tabpanel">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="subject">Subject</label>
+            <input id="subject" type="text" class="form-control" maxlength="200" placeholder="Your July offer is here">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="headline">Headline</label>
+            <input id="headline" type="text" class="form-control" maxlength="200" placeholder="Big Summer Sale">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="body-text">Body</label>
+            <textarea id="body-text" class="form-control" rows="7" placeholder="Write your message..."></textarea>
+            <div class="form-text">Blank line starts a new paragraph.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="content-file">Content image</label>
+            <label class="dropzone" for="content-file">
+              <span class="thumb"><i class="bi bi-image" aria-hidden="true"></i></span>
+              <span id="content-status" class="file-status">No image selected — click to choose</span>
+            </label>
+            <input id="content-file" type="file" class="visually-hidden" accept="image/png,image/jpeg,image/gif">
+          </div>
+          <div class="row g-2 mb-1">
+            <div class="col-6">
+              <label class="form-label fw-semibold small" for="cta-text">Button text</label>
+              <input id="cta-text" type="text" class="form-control" maxlength="60" placeholder="Shop now">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold small" for="cta-url">Button link</label>
+              <input id="cta-url" type="url" class="form-control" placeholder="https://example.com/sale">
+            </div>
+          </div>
+          <span id="cta-feedback" class="feedback d-block mb-3" role="status"></span>
+          <div class="mb-1">
+            <label class="form-label fw-semibold small" for="footer-text">Footer</label>
+            <textarea id="footer-text" class="form-control" rows="2" placeholder="DaScout Inc · 123 Main St · You received this because..."></textarea>
+          </div>
+        </section>
 
-          <label for="brand-color">Brand color</label>
-          <input id="brand-color" type="color" value="#1a73e8">
+        <section class="tab-pane fade" id="pane-branding" role="tabpanel">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="logo-file">Logo</label>
+            <label class="dropzone" for="logo-file">
+              <span class="thumb"><i class="bi bi-image" aria-hidden="true"></i></span>
+              <span id="logo-status" class="file-status">No logo selected — click to choose</span>
+            </label>
+            <input id="logo-file" type="file" class="visually-hidden" accept="image/png,image/jpeg,image/gif">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="brand-color">Brand color</label>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <button class="swatch" type="button" data-color="#0d9488" style="background:#0d9488" aria-label="Teal"></button>
+              <button class="swatch" type="button" data-color="#ea580c" style="background:#ea580c" aria-label="Orange"></button>
+              <button class="swatch" type="button" data-color="#2b5fd9" style="background:#2b5fd9" aria-label="Blue"></button>
+              <button class="swatch" type="button" data-color="#7c3aed" style="background:#7c3aed" aria-label="Violet"></button>
+              <button class="swatch" type="button" data-color="#111827" style="background:#111827" aria-label="Near black"></button>
+              <input id="brand-color" type="color" class="form-control form-control-color ms-1" value="#1a73e8" title="Custom color">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="font-family">Font</label>
+            <select id="font-family" class="form-select">
+              <option value="Arial, Helvetica, sans-serif">Arial</option>
+              <option value="Georgia, serif">Georgia</option>
+              <option value="Verdana, Geneva, sans-serif">Verdana</option>
+              <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+              <option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
+            </select>
+          </div>
+          <div class="mb-1">
+            <label class="form-label fw-semibold small" for="align">Alignment</label>
+            <select id="align" class="form-select">
+              <option value="center">Center</option>
+              <option value="left">Left</option>
+            </select>
+          </div>
+        </section>
 
-          <label for="font-family">Font</label>
-          <select id="font-family">
-            <option value="Arial, Helvetica, sans-serif">Arial</option>
-            <option value="Georgia, serif">Georgia</option>
-            <option value="Verdana, Geneva, sans-serif">Verdana</option>
-            <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
-            <option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
-          </select>
-
-          <label for="align">Alignment</label>
-          <select id="align">
-            <option value="center">Center</option>
-            <option value="left">Left</option>
-          </select>
-        </fieldset>
-
-        <fieldset>
-          <legend>Content</legend>
-          <label for="headline">Headline</label>
-          <input id="headline" type="text" maxlength="200" placeholder="Big Summer Sale">
-
-          <label for="body-text">Body text (blank line = new paragraph)</label>
-          <textarea id="body-text" rows="8" placeholder="Write your message..."></textarea>
-
-          <label for="content-file">Content image</label>
-          <input id="content-file" type="file" accept="image/png,image/jpeg,image/gif">
-          <span id="content-status" class="file-status">No image selected</span>
-
-          <label for="cta-text">Button text</label>
-          <input id="cta-text" type="text" maxlength="60" placeholder="Shop now">
-
-          <label for="cta-url">Button link</label>
-          <input id="cta-url" type="url" placeholder="https://example.com/sale">
-          <span id="cta-feedback" class="feedback"></span>
-
-          <label for="footer-text">Footer</label>
-          <textarea id="footer-text" rows="3" placeholder="DaScout Inc · 123 Main St · You received this because..."></textarea>
-        </fieldset>
+        <section class="tab-pane fade" id="pane-send" role="tabpanel">
+          <div class="mb-1">
+            <label class="form-label fw-semibold small" for="recipients">Recipients</label>
+            <textarea id="recipients" class="form-control" rows="8" placeholder="alice@example.com&#10;bob@example.com"></textarea>
+            <div class="form-text">One per line — commas and semicolons work too.</div>
+            <div id="recipients-feedback" class="feedback mt-2" role="status"></div>
+          </div>
+        </section>
       </form>
-    </section>
 
-    <section class="panel preview-panel" aria-label="Live preview">
-      <h2>Preview</h2>
-      <iframe id="preview-frame" title="Email preview" sandbox="allow-same-origin"></iframe>
-    </section>
-
-    <section class="panel send-panel" aria-label="Send">
-      <h2>Send</h2>
-      <label for="recipients">Recipients (one per line; commas and semicolons also work)</label>
-      <textarea id="recipients" rows="6" placeholder="alice@example.com&#10;bob@example.com"></textarea>
-      <div id="recipients-feedback" class="feedback" role="status"></div>
-
-      <div class="send-buttons">
-        <button id="test-send-btn" type="button" disabled>Send test to myself</button>
-        <button id="send-btn" type="button" disabled>Send campaign</button>
+      <div class="actionbar border-top p-3 bg-body flex-shrink-0">
+        <button id="test-send-btn" type="button" class="btn btn-outline-secondary" disabled>Send test to me</button>
+        <button id="send-btn" type="button" class="btn btn-send flex-fill" disabled>
+          <i class="bi bi-send me-1" aria-hidden="true"></i>Send campaign
+        </button>
       </div>
+    </aside>
 
-      <div id="progress" class="progress" hidden>
-        <div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div>
-        <span id="progress-label"></span>
+    <main class="stage bg-body-tertiary">
+      <div class="stage-bar px-4 py-2 small text-secondary flex-shrink-0">
+        <span class="live-dot" aria-hidden="true"></span> Live preview — exactly what recipients receive
       </div>
+      <div class="stage-canvas p-4">
+        <iframe id="preview-frame" title="Email preview" sandbox="allow-same-origin"></iframe>
+      </div>
+      <div id="progress" class="card mx-4 mb-3 flex-shrink-0" hidden>
+        <div class="card-body py-2 send-strip small">
+          <div class="progress flex-fill" role="progressbar" aria-label="Send progress">
+            <div id="progress-bar" class="progress-bar bg-primary"></div>
+          </div>
+          <span id="progress-label" class="text-nowrap"></span>
+        </div>
+      </div>
+      <div id="report" class="report card mx-4 mb-3 flex-shrink-0" hidden></div>
+    </main>
+  </div>
 
-      <div id="report" class="report" hidden></div>
-    </section>
-  </main>
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
