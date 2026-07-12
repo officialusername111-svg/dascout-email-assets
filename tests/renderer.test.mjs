@@ -63,3 +63,22 @@ test('alignment and font flow into inline styles', () => {
   assert.ok(left.html.includes('text-align:left'));
   assert.ok(left.html.includes('Arial, Helvetica, sans-serif'));
 });
+
+test('unsafe fontFamily and brandColor fall back to safe defaults', () => {
+  const model = {
+    ...baseModel,
+    fontFamily: '";</style><img src=x onerror=alert(1)>',
+    brandColor: 'red" onmouseover="x'
+  };
+  const { html } = renderEmail(model, noImages);
+  assert.ok(!html.includes('onerror'));
+  assert.ok(!html.includes('onmouseover'));
+  assert.ok(html.includes('Arial, Helvetica, sans-serif'));
+  assert.ok(html.includes('#1a73e8'));
+});
+
+test('non-http(s)/mailto CTA urls are neutralized', () => {
+  const { html } = renderEmail({ ...baseModel, ctaUrl: 'javascript:alert(1)' }, noImages);
+  assert.ok(!html.includes('javascript:'));
+  assert.ok(html.includes('href="#"'));
+});

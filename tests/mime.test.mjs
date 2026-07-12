@@ -60,3 +60,9 @@ test('no attachments still yields valid related/alternative structure', () => {
   assert.ok(msg.includes('multipart/alternative'));
   assert.ok(msg.trimEnd().endsWith('--rel-b0undary--'));
 });
+
+test('CRLF in from/to cannot inject additional headers', () => {
+  const msg = buildMimeMessage({ ...args, to: 'evil@x.com\r\nBcc: victim@y.com' });
+  assert.ok(!/(^|\r\n)Bcc:/.test(msg));
+  assert.ok(msg.includes('To: evil@x.com Bcc: victim@y.com'));
+});

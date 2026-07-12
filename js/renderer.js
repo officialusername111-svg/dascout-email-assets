@@ -1,5 +1,28 @@
 // Pure module — no DOM. Table-based, inline-styled HTML that survives Gmail/Outlook.
 
+const FONT_STACKS = [
+  'Arial, Helvetica, sans-serif',
+  'Georgia, serif',
+  'Verdana, Geneva, sans-serif',
+  'Tahoma, Geneva, sans-serif',
+  "'Trebuchet MS', Helvetica, sans-serif"
+];
+const DEFAULT_FONT = FONT_STACKS[0];
+const DEFAULT_COLOR = '#1a73e8';
+
+function safeFont(value) {
+  return FONT_STACKS.includes(value) ? value : DEFAULT_FONT;
+}
+
+function safeColor(value) {
+  return /^#[0-9a-fA-F]{6}$/.test(String(value)) ? value : DEFAULT_COLOR;
+}
+
+function safeUrl(value) {
+  const url = String(value || '').trim();
+  return /^(https?:|mailto:)/i.test(url) ? url : '#';
+}
+
 export function escapeHtml(s) {
   return String(s)
     .replace(/&/g, '&amp;')
@@ -10,8 +33,8 @@ export function escapeHtml(s) {
 
 export function renderEmail(model, images) {
   const align = model.align === 'left' ? 'left' : 'center';
-  const font = model.fontFamily || 'Arial, Helvetica, sans-serif';
-  const color = model.brandColor || '#1a73e8';
+  const font = safeFont(model.fontFamily);
+  const color = safeColor(model.brandColor);
 
   const paragraphs = String(model.bodyText || '')
     .split(/\n\s*\n/)
@@ -49,7 +72,7 @@ export function renderEmail(model, images) {
   if (model.ctaText) {
     rows.push(
       `<tr><td style="padding:20px 32px;text-align:${align};">` +
-      `<a href="${escapeHtml(model.ctaUrl || '#')}" style="display:inline-block;padding:12px 28px;` +
+      `<a href="${escapeHtml(safeUrl(model.ctaUrl))}" style="display:inline-block;padding:12px 28px;` +
       `background-color:${color};color:#ffffff;font-family:${font};font-size:15px;` +
       `font-weight:bold;text-decoration:none;border-radius:4px;">` +
       `${escapeHtml(model.ctaText)}</a></td></tr>`

@@ -24,10 +24,14 @@ function wrap76(b64) {
   return b64.replace(/(.{76})/g, '$1\r\n');
 }
 
+function headerSafe(value) {
+  return String(value).replace(/[\r\n]+/g, ' ').trim();
+}
+
 export function buildMimeMessage({ from, to, subject, html, text, attachments = [] }) {
   const lines = [
-    `From: ${from}`,
-    `To: ${to}`,
+    `From: ${headerSafe(from)}`,
+    `To: ${headerSafe(to)}`,
     `Subject: =?UTF-8?B?${encodeBase64(subject)}?=`,
     'MIME-Version: 1.0',
     `Content-Type: multipart/related; boundary="${REL_BOUNDARY}"`,

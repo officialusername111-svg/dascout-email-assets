@@ -8,6 +8,7 @@ let tokenClient = null;
 let accessToken = null;
 let tokenExpiresAt = 0;
 let userEmail = null;
+let pendingToken = null;
 
 export function initAuth() {
   tokenClient = google.accounts.oauth2.initTokenClient({
@@ -18,7 +19,8 @@ export function initAuth() {
 }
 
 function requestToken(promptMode) {
-  return new Promise((resolve, reject) => {
+  if (pendingToken) return pendingToken;
+  const p = new Promise((resolve, reject) => {
     tokenClient.callback = (resp) => {
       if (resp.error) {
         reject(new Error(resp.error_description || resp.error));
@@ -33,17 +35,26 @@ function requestToken(promptMode) {
     };
     tokenClient.requestAccessToken({ prompt: promptMode });
   });
+  pendingToken = p;
+  p.then(() => { pendingToken = null; }, () => { pendingToken = null; });
+  return p;
 }
 
 export async function signIn() {
   await requestToken('consent');
-  const resp = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-    headers: { Authorization: `Bearer ${accessToken}` }
-  });
-  if (!resp.ok) throw new Error('Could not read account email');
-  const info = await resp.json();
-  userEmail = info.email;
-  return userEmail;
+  try {
+    const resp = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    if (!resp.ok) throw new Error('Could not read account email');
+    const info = await resp.json();
+    userEmail = info.email;
+    return userEmail;
+  } catch (e) {
+    accessToken = null;
+    tokenExpiresAt = 0;
+    throw e;
+  }
 }
 
 export async function getAccessToken() {
