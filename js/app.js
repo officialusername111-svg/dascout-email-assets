@@ -138,6 +138,28 @@ function setFormLocked(locked) {
   el('recipients').disabled = locked;
 }
 
+function syncBackgroundControls() {
+  const mode = el('bg-mode').value;
+  el('bg-direction').disabled = sending || mode === '1';
+  el('bg-color-2').disabled = sending || mode === '1';
+  el('bg-color-3').disabled = sending || mode !== '3';
+}
+
+function bindSizeClamps() {
+  const LIMITS = { 'headline-size': [18, 40], 'body-size': [12, 24], 'footer-size': [10, 16] };
+  for (const [id, [min, max]] of Object.entries(LIMITS)) {
+    el(id).addEventListener('change', () => {
+      const input = el(id);
+      const n = parseInt(input.value, 10);
+      const clamped = Number.isNaN(n) ? Number(input.defaultValue) : Math.min(max, Math.max(min, n));
+      if (String(clamped) !== input.value) {
+        input.value = String(clamped);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+  }
+}
+
 function bindSwatches() {
   const colorInput = el('brand-color');
   const syncSelection = () => {
@@ -186,6 +208,7 @@ async function runSend(recipients) {
   } finally {
     sending = false;
     setFormLocked(false);
+    syncBackgroundControls();
     refreshSendButtons();
   }
 }
@@ -222,6 +245,9 @@ function init() {
   bindAuth();
   bindSend();
   bindSwatches();
+  bindSizeClamps();
+  el('bg-mode').addEventListener('input', syncBackgroundControls);
+  syncBackgroundControls();
 
   updatePreview(readModel());
   refreshCtaFeedback(readModel());
