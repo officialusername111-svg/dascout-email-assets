@@ -17,6 +17,13 @@ function updatePreview(model) {
   el('preview-frame').srcdoc = html;
 }
 
+function ctaProblem(model) {
+  if (model.ctaText.trim() && !/^(https?:|mailto:)/i.test(model.ctaUrl.trim())) {
+    return 'Button has no destination link';
+  }
+  return null;
+}
+
 // ---------- auth UI ----------
 
 function refreshAuthUi() {
@@ -62,7 +69,8 @@ function refreshSendButtons() {
   const { valid, invalid } = recipientState();
   const signedIn = isSignedIn();
   el('test-send-btn').disabled = sending || !signedIn;
-  el('send-btn').disabled = sending || !signedIn || valid.length === 0 || invalid.length > 0;
+  el('send-btn').disabled = sending || !signedIn || valid.length === 0 || invalid.length > 0 || ctaProblem(readModel()) !== null;
+  el('signout-btn').disabled = sending;
 }
 
 // ---------- sending ----------
@@ -98,8 +106,21 @@ function showReport({ results, aborted, remaining }) {
   let headline = aborted
     ? `<strong class="fail">Run stopped early (quota/rate limit).</strong> ${remaining.length} recipient(s) not attempted: ${remaining.map(escapeHtml).join(', ')}`
     : `<strong>Done.</strong> ${results.filter((r) => r.ok).length} sent, ${results.filter((r) => !r.ok).length} failed.`;
+  const resumeButton = aborted && remaining.length > 0
+    ? `<button id="resume-btn" type="button">Send to remaining ${remaining.length}</button>`
+    : '';
   el('report').hidden = false;
-  el('report').innerHTML = `${headline}<ul>${items.join('')}</ul>`;
+  el('report').innerHTML = `${headline}<ul>${items.join('')}</ul>${resumeButton}`;
+  if (aborted && remaining.length > 0) {
+    el('resume-btn').addEventListener('click', () => runSend(remaining));
+  }
+}
+
+function setFormLocked(locked) {
+  el('composer-form').querySelectorAll('input, textarea, select').forEach((field) => {
+    field.disabled = locked;
+  });
+  el('recipients').disabled = locked;
 }
 
 async function runSend(recipients) {
@@ -109,6 +130,7 @@ async function runSend(recipients) {
     return;
   }
   sending = true;
+  setFormLocked(true);
   refreshSendButtons();
   el('report').hidden = true;
   showProgress(0, recipients.length);
@@ -131,6 +153,7 @@ async function runSend(recipients) {
     el('report').innerHTML = `<strong class="fail">Send failed: ${escapeHtml(e.message)}</strong>`;
   } finally {
     sending = false;
+    setFormLocked(false);
     refreshSendButtons();
   }
 }
@@ -160,6 +183,9 @@ function init() {
   onModelChange((model) => {
     saveDraft(model);
     updatePreview(model);
+    const problem = ctaProblem(model);
+    el('cta-feedback').innerHTML = problem ? `<span class="invalid">${escapeHtml(problem)}</span>` : '';
+    refreshSendButtons();
   });
 
   bindAuth();

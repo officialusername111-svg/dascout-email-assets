@@ -21,8 +21,17 @@ export async function sendCampaign({
   for (let i = 0; i < recipients.length; i++) {
     const to = recipients[i];
     let fatal = false;
+
+    let token;
     try {
-      const token = await getToken();
+      token = await getToken();
+    } catch (e) {
+      results.push({ to, ok: false, error: 'Sign-in required: ' + e.message });
+      if (onProgress) onProgress({ done: i + 1, total: recipients.length, results });
+      return { results, aborted: true, remaining: recipients.slice(i + 1) };
+    }
+
+    try {
       const raw = buildMimeMessage({ from, to, subject, html, text, attachments });
       const resp = await fetchFn(SEND_URL, {
         method: 'POST',

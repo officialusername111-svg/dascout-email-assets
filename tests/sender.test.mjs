@@ -65,6 +65,21 @@ test('network exception is recorded per recipient, run continues', async () => {
   assert.equal(results[1].ok, true);
 });
 
+test('getToken failure aborts the run with remaining recipients', async () => {
+  let n = 0;
+  const getToken = async () => { if (++n === 2) throw new Error('consent denied'); return 'tok'; };
+  const fetchFn = async () => okResponse();
+  const { results, aborted, remaining } = await sendCampaign({
+    ...baseOpts, getToken, recipients: ['a@x.com', 'b@x.com', 'c@x.com'], fetchFn
+  });
+  assert.equal(aborted, true);
+  assert.equal(results.length, 2);
+  assert.equal(results[0].ok, true);
+  assert.equal(results[1].ok, false);
+  assert.ok(results[1].error.includes('Sign-in required'));
+  assert.deepEqual(remaining, ['c@x.com']);
+});
+
 test('onProgress fires after every recipient', async () => {
   const ticks = [];
   const fetchFn = async () => okResponse();
