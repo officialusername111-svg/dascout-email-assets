@@ -9,6 +9,7 @@ let accessToken = null;
 let tokenExpiresAt = 0;
 let userEmail = null;
 let pendingToken = null;
+let pendingPrompt = null;
 
 export function initAuth() {
   tokenClient = google.accounts.oauth2.initTokenClient({
@@ -19,7 +20,15 @@ export function initAuth() {
 }
 
 function requestToken(promptMode) {
-  if (pendingToken) return pendingToken;
+  if (pendingToken) {
+    if (pendingPrompt === promptMode) return pendingToken;
+    // A flight with a different prompt mode is in progress. Wait for it:
+    // if it delivers a token, use that; if it fails, issue this request.
+    return pendingToken.then(
+      (token) => token,
+      () => requestToken(promptMode)
+    );
+  }
   const p = new Promise((resolve, reject) => {
     tokenClient.callback = (resp) => {
       if (resp.error) {
@@ -36,7 +45,11 @@ function requestToken(promptMode) {
     tokenClient.requestAccessToken({ prompt: promptMode });
   });
   pendingToken = p;
-  p.then(() => { pendingToken = null; }, () => { pendingToken = null; });
+  pendingPrompt = promptMode;
+  p.then(
+    () => { pendingToken = null; pendingPrompt = null; },
+    () => { pendingToken = null; pendingPrompt = null; }
+  );
   return p;
 }
 
