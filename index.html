@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DaScout Emailing</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1>DaScout Emailing</h1>
+    <div class="auth-area">
+      <span id="user-email" class="user-email" hidden></span>
+      <button id="signin-btn" type="button">Sign in with Google</button>
+      <button id="signout-btn" type="button" hidden>Sign out</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel form-panel" aria-label="Email composer">
+      <h2>Compose</h2>
+      <form id="composer-form" autocomplete="off">
+        <label for="subject">Subject</label>
+        <input id="subject" type="text" maxlength="200" placeholder="Your July offer is here">
+
+        <fieldset>
+          <legend>Branding</legend>
+          <label for="logo-file">Logo image</label>
+          <input id="logo-file" type="file" accept="image/png,image/jpeg,image/gif">
+          <span id="logo-status" class="file-status">No logo selected</span>
+
+          <label for="brand-color">Brand color</label>
+          <input id="brand-color" type="color" value="#1a73e8">
+
+          <label for="font-family">Font</label>
+          <select id="font-family">
+            <option value="Arial, Helvetica, sans-serif">Arial</option>
+            <option value="Georgia, serif">Georgia</option>
+            <option value="Verdana, Geneva, sans-serif">Verdana</option>
+            <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+            <option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
+          </select>
+
+          <label for="align">Alignment</label>
+          <select id="align">
+            <option value="center">Center</option>
+            <option value="left">Left</option>
+          </select>
+        </fieldset>
+
+        <fieldset>
+          <legend>Content</legend>
+          <label for="headline">Headline</label>
+          <input id="headline" type="text" maxlength="200" placeholder="Big Summer Sale">
+
+          <label for="body-text">Body text (blank line = new paragraph)</label>
+          <textarea id="body-text" rows="8" placeholder="Write your message..."></textarea>
+
+          <label for="content-file">Content image</label>
+          <input id="content-file" type="file" accept="image/png,image/jpeg,image/gif">
+          <span id="content-status" class="file-status">No image selected</span>
+
+          <label for="cta-text">Button text</label>
+          <input id="cta-text" type="text" maxlength="60" placeholder="Shop now">
+
+          <label for="cta-url">Button link</label>
+          <input id="cta-url" type="url" placeholder="https://example.com/sale">
+
+          <label for="footer-text">Footer</label>
+          <textarea id="footer-text" rows="3" placeholder="DaScout Inc · 123 Main St · You received this because..."></textarea>
+        </fieldset>
+      </form>
+    </section>
+
+    <section class="panel preview-panel" aria-label="Live preview">
+      <h2>Preview</h2>
+      <iframe id="preview-frame" title="Email preview" sandbox="allow-same-origin"></iframe>
+    </section>
+
+    <section class="panel send-panel" aria-label="Send">
+      <h2>Send</h2>
+      <label for="recipients">Recipients (one per line; commas and semicolons also work)</label>
+      <textarea id="recipients" rows="6" placeholder="alice@example.com&#10;bob@example.com"></textarea>
+      <div id="recipients-feedback" class="feedback" role="status"></div>
+
+      <div class="send-buttons">
+        <button id="test-send-btn" type="button" disabled>Send test to myself</button>
+        <button id="send-btn" type="button" disabled>Send campaign</button>
+      </div>
+
+      <div id="progress" class="progress" hidden>
+        <div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div>
+        <span id="progress-label"></span>
+      </div>
+
+      <div id="report" class="report" hidden></div>
+    </section>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

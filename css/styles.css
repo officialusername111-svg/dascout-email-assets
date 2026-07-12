@@ -1,0 +1,82 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #f0f2f5;
+  color: #1c1e21;
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background: #ffffff;
+  border-bottom: 1px solid #d9dce1;
+}
+.topbar h1 { margin: 0; font-size: 1.15rem; }
+.auth-area { display: flex; align-items: center; gap: 0.6rem; }
+.user-email { font-size: 0.85rem; color: #555; }
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(360px, 1fr) minmax(300px, 380px);
+  gap: 1rem;
+  padding: 1rem;
+  align-items: start;
+}
+@media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #d9dce1;
+  border-radius: 8px;
+  padding: 1rem;
+}
+.panel h2 { margin-top: 0; font-size: 1rem; }
+
+label { display: block; margin: 0.7rem 0 0.25rem; font-size: 0.85rem; font-weight: 600; }
+input[type="text"], input[type="url"], textarea, select {
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #c4c9d0;
+  border-radius: 5px;
+  font: inherit;
+}
+fieldset { border: 1px solid #e2e5e9; border-radius: 6px; margin: 0.9rem 0; padding: 0.25rem 0.75rem 0.75rem; }
+legend { font-size: 0.8rem; font-weight: 700; color: #666; padding: 0 0.3rem; }
+.file-status { display: block; font-size: 0.78rem; color: #777; margin-top: 0.2rem; }
+
+button {
+  padding: 0.5rem 0.9rem;
+  border: none;
+  border-radius: 5px;
+  background: #1a73e8;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+button:disabled { background: #a8b3c0; cursor: not-allowed; }
+#signout-btn { background: #5f6368; }
+
+.preview-panel iframe {
+  width: 100%;
+  min-height: 560px;
+  border: 1px solid #e2e5e9;
+  border-radius: 6px;
+  background: #f4f4f4;
+}
+
+.send-buttons { display: flex; gap: 0.6rem; margin-top: 0.8rem; }
+.feedback { font-size: 0.8rem; margin-top: 0.35rem; min-height: 1.1em; }
+.feedback .invalid { color: #c5221f; }
+.feedback .ok { color: #188038; }
+
+.progress { margin-top: 0.9rem; }
+.progress-track { height: 8px; background: #e2e5e9; border-radius: 4px; overflow: hidden; }
+.progress-bar { height: 100%; width: 0%; background: #188038; transition: width 0.2s; }
+#progress-label { font-size: 0.8rem; color: #555; }
+
+.report { margin-top: 0.9rem; font-size: 0.8rem; max-height: 240px; overflow-y: auto; }
+.report ul { margin: 0.3rem 0; padding-left: 1.1rem; }
+.report .fail { color: #c5221f; }
+.report .sent { color: #188038; }
