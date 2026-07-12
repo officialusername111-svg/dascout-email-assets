@@ -24,6 +24,12 @@ function ctaProblem(model) {
   return null;
 }
 
+function refreshCtaFeedback(model) {
+  const problem = ctaProblem(model);
+  el('cta-feedback').innerHTML = problem ? `<span class="invalid">${escapeHtml(problem)}</span>` : '';
+  el('content-warn').hidden = problem === null;
+}
+
 // ---------- auth UI ----------
 
 function refreshAuthUi() {
@@ -63,8 +69,10 @@ function refreshRecipientsFeedback() {
   if (invalid.length) parts.push(`<span class="invalid">Invalid: ${invalid.map(escapeHtml).join(', ')}</span>`);
   el('recipients-feedback').innerHTML = parts.join(' · ');
   const badge = el('send-count');
-  badge.hidden = valid.length === 0;
+  badge.hidden = valid.length + invalid.length === 0;
   badge.textContent = String(valid.length);
+  badge.classList.toggle('text-bg-danger', invalid.length > 0);
+  badge.classList.toggle('text-bg-primary', invalid.length === 0);
   refreshSendButtons();
 }
 
@@ -203,8 +211,7 @@ function init() {
   onModelChange((model) => {
     saveDraft(model);
     updatePreview(model);
-    const problem = ctaProblem(model);
-    el('cta-feedback').innerHTML = problem ? `<span class="invalid">${escapeHtml(problem)}</span>` : '';
+    refreshCtaFeedback(model);
     refreshSendButtons();
   });
 
@@ -213,6 +220,7 @@ function init() {
   bindSwatches();
 
   updatePreview(readModel());
+  refreshCtaFeedback(readModel());
   refreshRecipientsFeedback();
 
   // GIS script is async — poll briefly until it's available.
