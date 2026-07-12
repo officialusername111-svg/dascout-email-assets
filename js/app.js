@@ -12,8 +12,8 @@ let sending = false;
 // ---------- preview ----------
 
 function updatePreview(model) {
-  const { logoUrl, contentUrl } = getImages();
-  const { html } = renderEmail(model, { logo: logoUrl, content: contentUrl });
+  const { logoUrl, contentUrl, footerLogoUrl } = getImages();
+  const { html } = renderEmail(model, { logo: logoUrl, content: contentUrl, footerLogo: footerLogoUrl });
   el('preview-frame').srcdoc = html;
 }
 
@@ -87,16 +87,20 @@ function refreshSendButtons() {
 // ---------- sending ----------
 
 async function collectAttachmentsAndHtml(model) {
-  const { logoFile, contentFile } = getImages();
+  const { logoFile, contentFile, footerLogoFile } = getImages();
   const attachments = [];
-  const srcs = { logo: null, content: null };
-  if (logoFile) {
+  const srcs = { logo: null, content: null, footerLogo: null };
+  if (logoFile && model.showHeaderLogo !== false) {
     attachments.push({ cid: 'logo', mimeType: logoFile.type, base64: await fileToBase64(logoFile) });
     srcs.logo = 'cid:logo';
   }
   if (contentFile) {
     attachments.push({ cid: 'content', mimeType: contentFile.type, base64: await fileToBase64(contentFile) });
     srcs.content = 'cid:content';
+  }
+  if (footerLogoFile && model.showFooterLogo !== false) {
+    attachments.push({ cid: 'footerlogo', mimeType: footerLogoFile.type, base64: await fileToBase64(footerLogoFile) });
+    srcs.footerLogo = 'cid:footerlogo';
   }
   const { html, text } = renderEmail(model, srcs);
   return { attachments, html, text };

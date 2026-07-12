@@ -9,18 +9,52 @@ const FONT_STACKS = [
 ];
 const DEFAULT_FONT = FONT_STACKS[0];
 const DEFAULT_COLOR = '#1a73e8';
+const DEFAULT_BG = '#ffffff';
+const DEFAULT_HEADING_COLOR = '#222222';
+const DEFAULT_TEXT_COLOR = '#444444';
+
+// linear-gradient angle per direction choice
+const GRADIENT_ANGLES = { vertical: '180deg', horizontal: '90deg', diagonal: '135deg' };
 
 function safeFont(value) {
   return FONT_STACKS.includes(value) ? value : DEFAULT_FONT;
 }
 
+function safeColorOr(value, fallback) {
+  return /^#[0-9a-fA-F]{6}$/.test(String(value)) ? value : fallback;
+}
+
 function safeColor(value) {
-  return /^#[0-9a-fA-F]{6}$/.test(String(value)) ? value : DEFAULT_COLOR;
+  return safeColorOr(value, DEFAULT_COLOR);
 }
 
 function safeUrl(value) {
   const url = String(value || '').trim();
   return /^(https?:|mailto:)/i.test(url) ? url : '#';
+}
+
+function clampSize(value, min, max, fallback) {
+  const n = parseInt(value, 10);
+  if (Number.isNaN(n)) return fallback;
+  return Math.min(max, Math.max(min, n));
+}
+
+// Background: solid color, or 2-3 stop gradient with the first color doubling
+// as the bgcolor fallback for clients that strip gradients (Outlook desktop).
+function backgroundStyles(model) {
+  const c1 = safeColorOr(model.bgColor1, DEFAULT_BG);
+  const mode = model.bgMode === '2' || model.bgMode === '3' ? model.bgMode : '1';
+  if (mode === '1') {
+    return { bgcolor: c1, style: `background-color:${c1};` };
+  }
+  const c2 = safeColorOr(model.bgColor2, c1);
+  const stops = [c1, c2];
+  if (mode === '3') stops.push(safeColorOr(model.bgColor3, c2));
+  const angle = GRADIENT_ANGLES[model.bgDirection] || GRADIENT_ANGLES.vertical;
+  return {
+    bgcolor: c1,
+    style: `background-color:${c1};background-image:linear-gradient(${angle},${stops.join(',')});`
+  };
 }
 
 export function escapeHtml(s) {
@@ -35,6 +69,12 @@ export function renderEmail(model, images) {
   const align = model.align === 'left' ? 'left' : 'center';
   const font = safeFont(model.fontFamily);
   const color = safeColor(model.brandColor);
+  const headingColor = safeColorOr(model.headingColor, DEFAULT_HEADING_COLOR);
+  const textColor = safeColorOr(model.textColor, DEFAULT_TEXT_COLOR);
+  const headlineSize = clampSize(model.headlineSize, 18, 40, 26);
+  const bodySize = clampSize(model.bodySize, 12, 24, 15);
+  const footerSize = clampSize(model.footerSize, 10, 16, 12);
+  const bg = backgroundStyles(model);
 
   const paragraphs = String(model.bodyText || '')
     .split(/\n\s*\n/)
@@ -43,7 +83,7 @@ export function renderEmail(model, images) {
 
   const rows = [];
 
-  if (images.logo) {
+  if (images.logo && model.showHeaderLogo !== false) {
     rows.push(
       `<tr><td style="padding:24px 32px 8px;text-align:${align};">` +
       `<img src="${images.logo}" alt="Logo" style="max-width:200px;max-height:80px;border:0;"></td></tr>`
@@ -52,14 +92,14 @@ export function renderEmail(model, images) {
   if (model.headline) {
     rows.push(
       `<tr><td style="padding:16px 32px 8px;text-align:${align};` +
-      `font-family:${font};font-size:26px;font-weight:bold;color:#222222;">` +
+      `font-family:${font};font-size:${headlineSize}px;font-weight:bold;color:${headingColor};">` +
       `${escapeHtml(model.headline)}</td></tr>`
     );
   }
   for (const p of paragraphs) {
     rows.push(
       `<tr><td class="para" style="padding:8px 32px;text-align:${align};` +
-      `font-family:${font};font-size:15px;line-height:1.6;color:#444444;">` +
+      `font-family:${font};font-size:${bodySize}px;line-height:1.6;color:${textColor};">` +
       `${escapeHtml(p).replace(/\n/g, '<br>')}</td></tr>`
     );
   }
@@ -78,11 +118,23 @@ export function renderEmail(model, images) {
       `${escapeHtml(model.ctaText)}</a></td></tr>`
     );
   }
-  if (model.footerText) {
+  const footerLogoShown = images.footerLogo && model.showFooterLogo !== false;
+  if (footerLogoShown || model.footerText) {
+    const parts = [];
+    if (footerLogoShown) {
+      const margin = align === 'center' ? '0 auto 10px' : '0 0 10px';
+      parts.push(
+        `<img src="${images.footerLogo}" alt="Logo" ` +
+        `style="max-width:140px;max-height:48px;border:0;display:block;margin:${margin};">`
+      );
+    }
+    if (model.footerText) {
+      parts.push(escapeHtml(model.footerText).replace(/\n/g, '<br>'));
+    }
     rows.push(
       `<tr><td style="padding:24px 32px;text-align:${align};` +
-      `font-family:${font};font-size:12px;line-height:1.5;color:#999999;` +
-      `border-top:1px solid #eeeeee;">${escapeHtml(model.footerText).replace(/\n/g, '<br>')}</td></tr>`
+      `font-family:${font};font-size:${footerSize}px;line-height:1.5;color:${textColor};">` +
+      `${parts.join('')}</td></tr>`
     );
   }
 
@@ -91,8 +143,8 @@ export function renderEmail(model, images) {
     `<body style="margin:0;padding:0;background-color:#f4f4f4;">` +
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f4;">` +
     `<tr><td align="center" style="padding:24px 12px;">` +
-    `<table role="presentation" width="600" cellpadding="0" cellspacing="0" ` +
-    `style="max-width:600px;width:100%;background-color:#ffffff;border-radius:6px;text-align:${align};">` +
+    `<table role="presentation" width="600" cellpadding="0" cellspacing="0" bgcolor="${bg.bgcolor}" ` +
+    `style="max-width:600px;width:100%;${bg.style}border-radius:6px;text-align:${align};">` +
     rows.join('') +
     `</table></td></tr></table></body></html>`;
 

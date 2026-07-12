@@ -82,3 +82,94 @@ test('non-http(s)/mailto CTA urls are neutralized', () => {
   assert.ok(!html.includes('javascript:'));
   assert.ok(html.includes('href="#"'));
 });
+
+const fullModel = {
+  ...baseModel,
+  bgMode: '3',
+  bgDirection: 'vertical',
+  bgColor1: '#0a0a0a',
+  bgColor2: '#1c1108',
+  bgColor3: '#3a2413',
+  headingColor: '#d4a86a',
+  textColor: '#e8e0d5',
+  headlineSize: '30',
+  bodySize: '16',
+  footerSize: '11',
+  showHeaderLogo: true,
+  showFooterLogo: true
+};
+
+test('3-color gradient renders with first-color bgcolor fallback', () => {
+  const { html } = renderEmail(fullModel, noImages);
+  assert.ok(html.includes('linear-gradient(180deg,#0a0a0a,#1c1108,#3a2413)'));
+  assert.ok(html.includes('bgcolor="#0a0a0a"'));
+  assert.ok(html.includes('background-color:#0a0a0a'));
+});
+
+test('solid mode emits no gradient', () => {
+  const { html } = renderEmail({ ...fullModel, bgMode: '1' }, noImages);
+  assert.ok(!html.includes('linear-gradient'));
+  assert.ok(html.includes('background-color:#0a0a0a'));
+});
+
+test('2-color mode uses two stops; directions map to angles', () => {
+  const two = renderEmail({ ...fullModel, bgMode: '2' }, noImages).html;
+  assert.ok(two.includes('linear-gradient(180deg,#0a0a0a,#1c1108)'));
+  const h = renderEmail({ ...fullModel, bgDirection: 'horizontal' }, noImages).html;
+  assert.ok(h.includes('linear-gradient(90deg'));
+  const d = renderEmail({ ...fullModel, bgDirection: 'diagonal' }, noImages).html;
+  assert.ok(d.includes('linear-gradient(135deg'));
+});
+
+test('invalid background colors fall back safely', () => {
+  const { html } = renderEmail(
+    { ...fullModel, bgMode: '2', bgColor1: 'evil"><script>', bgColor2: 'nope' },
+    noImages
+  );
+  assert.ok(!html.includes('script'));
+  assert.ok(html.includes('background-color:#ffffff'));
+});
+
+test('heading and text colors apply; invalid values fall back', () => {
+  const { html } = renderEmail(fullModel, noImages);
+  assert.ok(html.includes('color:#d4a86a'));
+  assert.ok(html.includes('color:#e8e0d5'));
+  const fb = renderEmail({ ...fullModel, headingColor: 'x', textColor: 'y' }, noImages).html;
+  assert.ok(fb.includes('color:#222222'));
+  assert.ok(fb.includes('color:#444444'));
+});
+
+test('font sizes apply and clamp to their ranges', () => {
+  const { html } = renderEmail(fullModel, noImages);
+  assert.ok(html.includes('font-size:30px'));
+  assert.ok(html.includes('font-size:16px'));
+  assert.ok(html.includes('font-size:11px'));
+  const clamped = renderEmail(
+    { ...fullModel, headlineSize: '400', bodySize: 'abc', footerSize: '1' },
+    noImages
+  ).html;
+  assert.ok(clamped.includes('font-size:40px'));
+  assert.ok(clamped.includes('font-size:15px'));
+  assert.ok(clamped.includes('font-size:10px'));
+});
+
+test('header and footer logos render when provided; toggles hide them', () => {
+  const imgs = { logo: 'cid:logo', content: null, footerLogo: 'cid:footerlogo' };
+  const shown = renderEmail(fullModel, imgs).html;
+  assert.ok(shown.includes('src="cid:logo"'));
+  assert.ok(shown.includes('src="cid:footerlogo"'));
+  const hidden = renderEmail(
+    { ...fullModel, showHeaderLogo: false, showFooterLogo: false },
+    imgs
+  ).html;
+  assert.ok(!hidden.includes('src="cid:logo"'));
+  assert.ok(!hidden.includes('src="cid:footerlogo"'));
+});
+
+test('legacy model without new fields keeps prior defaults', () => {
+  const { html } = renderEmail(baseModel, noImages);
+  assert.ok(html.includes('background-color:#ffffff'));
+  assert.ok(html.includes('font-size:26px'));
+  assert.ok(html.includes('color:#222222'));
+  assert.ok(!html.includes('linear-gradient'));
+});

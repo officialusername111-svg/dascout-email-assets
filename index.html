@@ -90,15 +90,82 @@
 
         <section class="tab-pane fade" id="pane-branding" role="tabpanel">
           <div class="mb-3">
-            <label class="form-label fw-semibold small" for="logo-file">Logo</label>
+            <label class="form-label fw-semibold small" for="logo-file">Header logo</label>
             <label class="dropzone" for="logo-file">
               <span class="thumb"><i class="bi bi-image" aria-hidden="true"></i></span>
               <span id="logo-status" class="file-status">No logo selected — click to choose</span>
             </label>
             <input id="logo-file" type="file" class="visually-hidden" accept="image/png,image/jpeg,image/gif">
+            <div class="form-check mt-1">
+              <input class="form-check-input" type="checkbox" id="show-header-logo" checked>
+              <label class="form-check-label small" for="show-header-logo">Show header logo</label>
+            </div>
           </div>
           <div class="mb-3">
-            <label class="form-label fw-semibold small" for="brand-color">Brand color</label>
+            <label class="form-label fw-semibold small" for="footer-logo-file">Footer logo</label>
+            <label class="dropzone" for="footer-logo-file">
+              <span class="thumb"><i class="bi bi-image" aria-hidden="true"></i></span>
+              <span id="footer-logo-status" class="file-status">No logo selected — click to choose</span>
+            </label>
+            <input id="footer-logo-file" type="file" class="visually-hidden" accept="image/png,image/jpeg,image/gif">
+            <div class="form-check mt-1">
+              <input class="form-check-input" type="checkbox" id="show-footer-logo" checked>
+              <label class="form-check-label small" for="show-footer-logo">Show footer logo</label>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small d-block">Text colors</label>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+              <span class="d-flex align-items-center gap-2">
+                <input id="heading-color" type="color" class="form-control form-control-color" value="#222222" title="Heading color">
+                <span class="form-text mt-0">Headings</span>
+              </span>
+              <span class="d-flex align-items-center gap-2">
+                <input id="text-color" type="color" class="form-control form-control-color" value="#444444" title="Body and footer text color">
+                <span class="form-text mt-0">Body &amp; footer</span>
+              </span>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small d-block" for="bg-mode">Background</label>
+            <div class="d-flex gap-2 mb-2">
+              <select id="bg-mode" class="form-select">
+                <option value="1">Solid</option>
+                <option value="2">2-color gradient</option>
+                <option value="3">3-color gradient</option>
+              </select>
+              <select id="bg-direction" class="form-select" aria-label="Gradient direction">
+                <option value="vertical">Vertical</option>
+                <option value="horizontal">Horizontal</option>
+                <option value="diagonal">Diagonal</option>
+              </select>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <input id="bg-color-1" type="color" class="form-control form-control-color" value="#ffffff" title="Color 1 (also the fallback for older email apps)">
+              <input id="bg-color-2" type="color" class="form-control form-control-color" value="#ffffff" title="Color 2">
+              <input id="bg-color-3" type="color" class="form-control form-control-color" value="#ffffff" title="Color 3">
+              <span class="form-text mt-0">First color is the fallback for older email apps.</span>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small d-block">Font sizes (px)</label>
+            <div class="d-flex gap-2">
+              <div class="flex-fill">
+                <input id="headline-size" type="number" class="form-control" value="26" min="18" max="40" aria-label="Headline size">
+                <div class="form-text">Headline</div>
+              </div>
+              <div class="flex-fill">
+                <input id="body-size" type="number" class="form-control" value="15" min="12" max="24" aria-label="Body size">
+                <div class="form-text">Body</div>
+              </div>
+              <div class="flex-fill">
+                <input id="footer-size" type="number" class="form-control" value="12" min="10" max="16" aria-label="Footer size">
+                <div class="form-text">Footer</div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="brand-color">Button color</label>
             <div class="d-flex align-items-center gap-2 flex-wrap">
               <button class="swatch" type="button" data-color="#0d9488" style="background:#0d9488" aria-label="Teal"></button>
               <button class="swatch" type="button" data-color="#ea580c" style="background:#ea580c" aria-label="Orange"></button>
