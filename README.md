@@ -19,8 +19,9 @@ secrets.
 ## Quick start
 
 1. Complete [SETUP.md](SETUP.md) (Google OAuth client + GitHub Pages).
-2. Open the app, **Sign in with Google**.
-3. Compose, pick images, **Send test to myself**, check your inbox.
+2. Open the app and click **Get started**.
+3. Compose, pick images, **Send test to me** — Google asks for permission on
+   your first send. Check your inbox.
 4. Paste recipients, **Send campaign**.
 
 ## Development

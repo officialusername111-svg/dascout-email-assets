@@ -57,6 +57,12 @@ function bindAuth() {
     el('landing').hidden = true;
     el('studio').hidden = false;
   });
+  // The brand is the way back to the landing/explanation; work is untouched.
+  el('brand-home').addEventListener('click', (e) => {
+    e.preventDefault();
+    el('landing').hidden = false;
+    el('studio').hidden = true;
+  });
   el('signout-btn').addEventListener('click', () => {
     signOut();
     clearRunUi();
@@ -196,43 +202,48 @@ function bindSwatches() {
 }
 
 async function runSend(target, { confirmCampaign = false } = {}) {
+  if (sending) return;
   const model = readModel();
   if (!model.subject.trim()) {
     alert('Please enter a subject before sending.');
     return;
   }
-  try {
-    await ensureSignedIn();
-  } catch (e) {
-    alert(`Sign-in is needed to send: ${e.message}`);
-    return;
-  }
-  const recipients = target === 'self' ? [getUserEmail()] : target;
-  if (confirmCampaign && !confirm(`Send this email to ${recipients.length} recipient(s) from ${getUserEmail()}?`)) {
-    return;
-  }
+  // Lock from the instant of the click: the sign-in popup below can stay open
+  // for a while, and a second click during that window must not start a
+  // concurrent run (which would double-send to every recipient).
   sending = true;
   setFormLocked(true);
   refreshSendButtons();
-  el('report').hidden = true;
-  showProgress(0, recipients.length);
-
   try {
-    const { attachments, html, text } = await collectAttachmentsAndHtml(model);
-    const outcome = await sendCampaign({
-      getToken: getAccessToken,
-      from: getUserEmail(),
-      recipients,
-      subject: model.subject,
-      html,
-      text,
-      attachments,
-      onProgress: ({ done, total }) => showProgress(done, total)
-    });
-    showReport(outcome);
-  } catch (e) {
-    el('report').hidden = false;
-    el('report').innerHTML = `<strong class="fail">Send failed: ${escapeHtml(e.message)}</strong>`;
+    try {
+      await ensureSignedIn();
+    } catch (e) {
+      alert(`Sign-in is needed to send: ${e.message}`);
+      return;
+    }
+    const recipients = target === 'self' ? [getUserEmail()] : target;
+    if (confirmCampaign && !confirm(`Send this email to ${recipients.length} recipient(s) from ${getUserEmail()}?`)) {
+      return;
+    }
+    el('report').hidden = true;
+    showProgress(0, recipients.length);
+    try {
+      const { attachments, html, text } = await collectAttachmentsAndHtml(model);
+      const outcome = await sendCampaign({
+        getToken: getAccessToken,
+        from: getUserEmail(),
+        recipients,
+        subject: model.subject,
+        html,
+        text,
+        attachments,
+        onProgress: ({ done, total }) => showProgress(done, total)
+      });
+      showReport(outcome);
+    } catch (e) {
+      el('report').hidden = false;
+      el('report').innerHTML = `<strong class="fail">Send failed: ${escapeHtml(e.message)}</strong>`;
+    }
   } finally {
     sending = false;
     setFormLocked(false);
