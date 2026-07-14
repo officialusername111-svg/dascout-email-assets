@@ -30,7 +30,42 @@
     </div>
   </nav>
 
-  <div class="studio">
+  <div class="landing" id="landing">
+    <div class="landing-inner">
+      <div class="hero">
+        <span class="badge-chip">
+          <i class="bi bi-shield-lock" aria-hidden="true"></i>
+          Runs entirely in your browser — no server, no account to create
+        </span>
+        <h1>Marketing emails, sent from your own Gmail</h1>
+        <p class="lead">DaScout Emailing is a free composer for small campaigns. Design a branded email with a live preview — logos, gradient backgrounds, your colors and fonts — paste your recipient list, and every person gets their own individual copy, sent by <b>your</b> Gmail account rather than a third-party service.</p>
+        <button id="landing-signin-btn" type="button" class="btn btn-send btn-lg">
+          <i class="bi bi-google me-1" aria-hidden="true"></i>Sign in with Google to get started
+        </button>
+        <div class="cta-note">Uses Google's official sign-in. Your password never touches this site, and you can revoke access anytime in your Google account settings.</div>
+      </div>
+
+      <h2>How it works</h2>
+      <div class="grid3">
+        <div class="cell"><span class="step-n">1</span><b>Sign in with Google</b><p>You grant one permission: sending email on your behalf. Nothing is read from your inbox, and the sign-in stays on this device.</p></div>
+        <div class="cell"><span class="step-n">2</span><b>Compose with live preview</b><p>Header and footer logos, gradient or solid backgrounds, text colors and sizes — the preview is exactly what recipients receive.</p></div>
+        <div class="cell"><span class="step-n">3</span><b>Test, then send</b><p>Send a test to yourself first. Then send the campaign — each recipient gets an individual copy, with live progress and a per-recipient report.</p></div>
+      </div>
+
+      <h2>Why it's safe</h2>
+      <div class="grid3">
+        <div class="cell"><i class="bi bi-envelope-check" aria-hidden="true"></i><b>Your Gmail does the sending</b><p>Mail goes out through Google's official API from your own account — replies land in your inbox, and your sending reputation stays yours.</p></div>
+        <div class="cell"><i class="bi bi-hdd" aria-hidden="true"></i><b>Nothing leaves your browser</b><p>There is no server and no database. Drafts save locally on your device; recipient lists are never uploaded anywhere.</p></div>
+        <div class="cell"><i class="bi bi-people" aria-hidden="true"></i><b>Recipients stay private</b><p>Every send is individual — nobody sees anyone else's address, unlike a CC/BCC blast.</p></div>
+      </div>
+
+      <div class="fineprint">
+        <b>Good to know:</b> Gmail limits sending to roughly 500 recipients per day on personal accounts (about 2,000 on Google Workspace) — right-sized for small campaigns, not mass blasts. Images are embedded inside the email itself, so nothing depends on external hosting. If a limit is hit mid-send, the run stops cleanly and one click resumes the remainder later.
+      </div>
+    </div>
+  </div>
+
+  <div class="studio" id="studio" hidden>
     <aside class="workspace border-end bg-body">
       <ul class="nav nav-tabs nav-fill flex-shrink-0" role="tablist">
         <li class="nav-item" role="presentation">

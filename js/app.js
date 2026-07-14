@@ -38,18 +38,22 @@ function refreshAuthUi() {
   el('signout-btn').hidden = !signedIn;
   el('user-email').hidden = !signedIn;
   el('user-email').textContent = signedIn ? getUserEmail() : '';
+  el('landing').hidden = signedIn;
+  el('studio').hidden = !signedIn;
   refreshSendButtons();
 }
 
 function bindAuth() {
-  el('signin-btn').addEventListener('click', async () => {
+  const handleSignIn = async () => {
     try {
       await signIn();
     } catch (e) {
       alert(`Sign-in failed: ${e.message}`);
     }
     refreshAuthUi();
-  });
+  };
+  el('signin-btn').addEventListener('click', handleSignIn);
+  el('landing-signin-btn').addEventListener('click', handleSignIn);
   el('signout-btn').addEventListener('click', () => {
     signOut();
     refreshAuthUi();
