@@ -52,16 +52,19 @@ async function ensureSignedIn() {
   refreshAuthUi();
 }
 
+function showStudio(open) {
+  el('landing').hidden = open;
+  el('studio').hidden = !open;
+  el('nav-get-started').hidden = open;
+}
+
 function bindAuth() {
-  el('get-started-btn').addEventListener('click', () => {
-    el('landing').hidden = true;
-    el('studio').hidden = false;
-  });
+  el('get-started-btn').addEventListener('click', () => showStudio(true));
+  el('nav-get-started').addEventListener('click', () => showStudio(true));
   // The brand is the way back to the landing/explanation; work is untouched.
   el('brand-home').addEventListener('click', (e) => {
     e.preventDefault();
-    el('landing').hidden = false;
-    el('studio').hidden = true;
+    showStudio(false);
   });
   el('signout-btn').addEventListener('click', () => {
     signOut();

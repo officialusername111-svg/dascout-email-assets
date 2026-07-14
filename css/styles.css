@@ -295,7 +295,22 @@ body {
   text-wrap: balance;
 }
 .landing .lead { font-size: 1rem; color: var(--sc-muted-fg); line-height: 1.65; margin: 0 0 1.6rem; }
-.landing .cta-note { font-size: 0.76rem; color: var(--sc-muted-fg); margin-top: 0.6rem; }
+.landing .cta-note { font-size: 0.76rem; color: var(--sc-muted-fg); margin-top: 0.75rem; }
+
+/* Hero CTA: the one loud element on the page */
+.landing .hero .btn-send {
+  font-size: 1.02rem;
+  padding: 0.85rem 2.4rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+.landing .hero .btn-send:hover { transform: translateY(-1px); }
+.landing .hero .btn-send:active { transform: scale(0.97); }
+.landing .hero .btn-send .bi-arrow-right {
+  display: inline-block;
+  transition: transform 200ms var(--ease-out);
+}
+.landing .hero .btn-send:hover .bi-arrow-right { transform: translateX(4px); }
 .landing h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; margin: 2.6rem 0 1rem; color: var(--sc-fg); }
 .landing .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
 @media (max-width: 760px) { .landing .grid3 { grid-template-columns: 1fr; } }
