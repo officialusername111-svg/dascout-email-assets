@@ -32,28 +32,31 @@ function refreshCtaFeedback(model) {
 
 // ---------- auth UI ----------
 
+let gisReady = false;
+
 function refreshAuthUi() {
   const signedIn = isSignedIn();
-  el('signin-btn').hidden = signedIn;
   el('signout-btn').hidden = !signedIn;
   el('user-email').hidden = !signedIn;
   el('user-email').textContent = signedIn ? getUserEmail() : '';
-  el('landing').hidden = signedIn;
-  el('studio').hidden = !signedIn;
   refreshSendButtons();
 }
 
+// Sign-in happens on demand, the first time a send needs it.
+async function ensureSignedIn() {
+  if (isSignedIn()) return;
+  if (!gisReady) {
+    throw new Error('Google Sign-In is still loading — try again in a moment.');
+  }
+  await signIn();
+  refreshAuthUi();
+}
+
 function bindAuth() {
-  const handleSignIn = async () => {
-    try {
-      await signIn();
-    } catch (e) {
-      alert(`Sign-in failed: ${e.message}`);
-    }
-    refreshAuthUi();
-  };
-  el('signin-btn').addEventListener('click', handleSignIn);
-  el('landing-signin-btn').addEventListener('click', handleSignIn);
+  el('get-started-btn').addEventListener('click', () => {
+    el('landing').hidden = true;
+    el('studio').hidden = false;
+  });
   el('signout-btn').addEventListener('click', () => {
     signOut();
     clearRunUi();
@@ -94,9 +97,8 @@ function refreshRecipientsFeedback() {
 
 function refreshSendButtons() {
   const { valid, invalid } = recipientState();
-  const signedIn = isSignedIn();
-  el('test-send-btn').disabled = sending || !signedIn;
-  el('send-btn').disabled = sending || !signedIn || valid.length === 0 || invalid.length > 0 || ctaProblem(readModel()) !== null;
+  el('test-send-btn').disabled = sending;
+  el('send-btn').disabled = sending || valid.length === 0 || invalid.length > 0 || ctaProblem(readModel()) !== null;
   el('signout-btn').disabled = sending;
 }
 
@@ -193,10 +195,20 @@ function bindSwatches() {
   syncSelection();
 }
 
-async function runSend(recipients) {
+async function runSend(target, { confirmCampaign = false } = {}) {
   const model = readModel();
   if (!model.subject.trim()) {
     alert('Please enter a subject before sending.');
+    return;
+  }
+  try {
+    await ensureSignedIn();
+  } catch (e) {
+    alert(`Sign-in is needed to send: ${e.message}`);
+    return;
+  }
+  const recipients = target === 'self' ? [getUserEmail()] : target;
+  if (confirmCampaign && !confirm(`Send this email to ${recipients.length} recipient(s) from ${getUserEmail()}?`)) {
     return;
   }
   sending = true;
@@ -233,13 +245,12 @@ function bindSend() {
   el('recipients').addEventListener('input', refreshRecipientsFeedback);
 
   el('test-send-btn').addEventListener('click', () => {
-    runSend([getUserEmail()]);
+    runSend('self');
   });
 
   el('send-btn').addEventListener('click', () => {
     const { valid } = recipientState();
-    if (!confirm(`Send this email to ${valid.length} recipient(s) from ${getUserEmail()}?`)) return;
-    runSend(valid);
+    runSend(valid, { confirmCampaign: true });
   });
 }
 
@@ -269,14 +280,13 @@ function init() {
   refreshCtaFeedback(readModel());
   refreshRecipientsFeedback();
 
-  // GIS script is async — poll briefly until it's available. Sign-in buttons
-  // start disabled in markup and only enable once the token client exists.
-  const gisReady = setInterval(() => {
+  // GIS script is async — poll briefly until it's available. Sends attempted
+  // before it's ready get a friendly retry message from ensureSignedIn().
+  const gisPoll = setInterval(() => {
     if (window.google && google.accounts && google.accounts.oauth2) {
-      clearInterval(gisReady);
+      clearInterval(gisPoll);
       initAuth();
-      el('signin-btn').disabled = false;
-      el('landing-signin-btn').disabled = false;
+      gisReady = true;
       refreshAuthUi();
     }
   }, 100);
