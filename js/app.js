@@ -56,8 +56,20 @@ function bindAuth() {
   el('landing-signin-btn').addEventListener('click', handleSignIn);
   el('signout-btn').addEventListener('click', () => {
     signOut();
+    clearRunUi();
     refreshAuthUi();
   });
+}
+
+// Reset campaign UI so the next sign-in opens a clean studio: a stale report
+// would otherwise survive (including a resume button bound to the previous
+// account's remaining recipient list).
+function clearRunUi() {
+  el('report').hidden = true;
+  el('report').innerHTML = '';
+  el('progress').hidden = true;
+  el('progress-bar').style.width = '0%';
+  el('progress-label').textContent = '';
 }
 
 // ---------- recipients ----------
@@ -257,11 +269,14 @@ function init() {
   refreshCtaFeedback(readModel());
   refreshRecipientsFeedback();
 
-  // GIS script is async — poll briefly until it's available.
+  // GIS script is async — poll briefly until it's available. Sign-in buttons
+  // start disabled in markup and only enable once the token client exists.
   const gisReady = setInterval(() => {
     if (window.google && google.accounts && google.accounts.oauth2) {
       clearInterval(gisReady);
       initAuth();
+      el('signin-btn').disabled = false;
+      el('landing-signin-btn').disabled = false;
       refreshAuthUi();
     }
   }, 100);
