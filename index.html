@@ -250,16 +250,55 @@
       <div class="stage-canvas p-4">
         <iframe id="preview-frame" title="Email preview" sandbox="allow-same-origin"></iframe>
       </div>
-      <div id="progress" class="card mx-4 mb-3 flex-shrink-0" hidden>
-        <div class="card-body py-2 send-strip small">
-          <div class="progress flex-fill" role="progressbar" aria-label="Send progress">
-            <div id="progress-bar" class="progress-bar"></div>
+    </main>
+  </div>
+
+  <div class="modal-scrim" id="signin-modal" hidden>
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>Sign in to send</h3>
+        <button type="button" id="signin-modal-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="signin-icon"><i class="bi bi-envelope-check" aria-hidden="true"></i></div>
+        <p class="signin-copy">DaScout Emailing sends from <b>your own Gmail account</b> — nothing goes through a third-party server.</p>
+        <p class="signin-copy">Google will ask you to sign in and approve permission to send email on your behalf. Your password never touches this site.</p>
+        <div class="signin-scope">Permission requested: <b>Send email</b> (gmail.send). Nothing is read from your inbox.</div>
+        <button type="button" id="signin-modal-continue" class="google-btn">
+          <svg class="google-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.4 5.1 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.4 5.1 29.5 3 24 3c-7.4 0-13.8 4.1-17.1 10.2z"/><path fill="#4CAF50" d="M24 45c5.4 0 10.3-1.8 14.1-5l-6.5-5.4C29.5 36.4 26.9 37 24 37c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5C9.1 40.7 15.9 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6.5 5.4C40.9 36.6 43 30.9 43 24c0-1.2-.1-2.4-.4-3.5z"/></svg>
+          Continue with Google
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-scrim" id="send-modal" hidden>
+    <div class="modal-box wide">
+      <div class="modal-head">
+        <h3 id="send-modal-title">Send campaign?</h3>
+        <button type="button" id="send-modal-x" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="send-modal-confirm-section">
+          <p class="signin-copy">Send this email to <b id="send-modal-count"></b> recipient(s) from <b id="send-modal-from"></b>?</p>
+        </div>
+        <div id="send-modal-progress-section" hidden>
+          <div class="send-summary">
+            <div class="stat sent"><div class="n" id="stat-sent">0</div><div class="lbl">Sent</div></div>
+            <div class="stat sending"><div class="n" id="stat-sending">0</div><div class="lbl">Sending</div></div>
+            <div class="stat failed"><div class="n" id="stat-failed">0</div><div class="lbl">Failed</div></div>
           </div>
-          <span id="progress-label" class="text-nowrap"></span>
+          <div class="send-progress-track"><div class="send-progress-fill" id="send-modal-fill" style="width:0%"></div></div>
+          <div class="send-list" id="send-modal-list"></div>
         </div>
       </div>
-      <div id="report" class="report card mx-4 mb-3 flex-shrink-0" hidden></div>
-    </main>
+      <div class="modal-foot">
+        <button type="button" id="send-modal-cancel-btn" class="btn btn-outline btn-block">Cancel</button>
+        <button type="button" id="send-modal-send-btn" class="btn btn-primary btn-block">Send</button>
+        <button type="button" id="send-modal-resume-btn" class="btn btn-outline btn-block" hidden>Send to remaining</button>
+        <button type="button" id="send-modal-close-btn" class="btn btn-primary btn-block" hidden>Close</button>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
