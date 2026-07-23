@@ -56,16 +56,18 @@ function showStudio(open) {
   el('landing').hidden = open;
   el('studio').hidden = !open;
   el('nav-get-started').hidden = open;
+  el('studio-back-btn').hidden = !open;
 }
 
 function bindAuth() {
   el('get-started-btn').addEventListener('click', () => showStudio(true));
   el('nav-get-started').addEventListener('click', () => showStudio(true));
-  // The brand is the way back to the landing/explanation; work is untouched.
+  // The brand and the explicit Back button both return to the landing/explanation; work is untouched.
   el('brand-home').addEventListener('click', (e) => {
     e.preventDefault();
     showStudio(false);
   });
+  el('studio-back-btn').addEventListener('click', () => showStudio(false));
   el('signout-btn').addEventListener('click', () => {
     signOut();
     clearRunUi();
@@ -109,6 +111,7 @@ function refreshSendButtons() {
   el('test-send-btn').disabled = sending;
   el('send-btn').disabled = sending || valid.length === 0 || invalid.length > 0 || ctaProblem(readModel()) !== null;
   el('signout-btn').disabled = sending;
+  el('studio-back-btn').disabled = sending;
 }
 
 // ---------- sending ----------
