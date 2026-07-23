@@ -1,0 +1,144 @@
+{
+  "$meta": {
+    "name": "Airtable Apps UI Kit — extracted design tokens",
+    "source": "https://www.figma.com/design/maQsH1ryeFU4zY7blGlPk5/Airtable-Apps-UI-Kit--Community-",
+    "sourceLastModified": "2026-07-23T13:26:33Z",
+    "extractedAt": "2026-07-23",
+    "method": "Figma REST API full-file fetch; every node walked programmatically; values below are exact and ranked by in-file usage count. Token names come from the kit's own published style names where they exist; role mappings marked 'derived' are inferred from usage frequency and context.",
+    "note": "Tokens only — no components (per request)."
+  },
+
+  "font": {
+    "families": {
+      "text": "SF Pro Text",
+      "display": "SF Pro Display"
+    },
+    "webFallbackStack": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    "comment": "The kit is set entirely in Apple's SF Pro (Text for UI sizes, Display for >=21px). On non-Apple platforms use the system stack above, which is what Airtable ships on the web."
+  },
+
+  "typeScale": {
+    "comment": "Sizes/line-heights/weights exactly as used; usage counts show the kit's center of gravity. Body sizes use SF Pro Text, headings >=21px use SF Pro Display.",
+    "text": {
+      "small":   { "fontSize": 11, "lineHeight": 14, "weight": 400, "letterSpacing": 0, "styleName": "Text / small", "usage": 323 },
+      "default": { "fontSize": 13, "lineHeight": 16, "weight": 400, "letterSpacing": 0, "styleName": "Text / default", "usage": 60 },
+      "defaultParagraph": { "fontSize": 13, "lineHeight": 18, "weight": 400, "letterSpacing": 0, "usage": 53 },
+      "large":   { "fontSize": 15, "lineHeight": 20, "weight": 400, "letterSpacing": 0, "styleName": "Text / large", "usage": 60 },
+      "largeParagraph": { "fontSize": 15, "lineHeight": 22, "weight": 400, "letterSpacing": 0, "styleName": "Text / large - paragraph", "usage": 8 },
+      "xlarge":  { "fontSize": 17, "lineHeight": 24, "weight": 400, "letterSpacing": 0, "styleName": "Text / xlarge", "usage": 1 }
+    },
+    "emphasis": {
+      "comment": "Same sizes, weight-shifted for emphasis/labels.",
+      "defaultSemibold": { "fontSize": 13, "lineHeight": 18, "weight": 600, "usage": 20 },
+      "defaultMedium":   { "fontSize": 13, "lineHeight": 16, "weight": 500, "usage": 7 },
+      "largeSemibold":   { "fontSize": 15, "lineHeight": 20, "weight": 600, "usage": 6 }
+    },
+    "caps": {
+      "comment": "The kit's signature all-caps micro-labels: 11px with wide tracking.",
+      "smallCapsBold":  { "fontSize": 11, "lineHeight": 16, "weight": 700, "letterSpacing": 0.55, "styleName": "Heading / xsmall - caps (derived)", "usage": 37 },
+      "labelMedium":    { "fontSize": 11, "lineHeight": 16, "weight": 500, "letterSpacing": 0.99, "styleName": "Label / default (derived)", "usage": 10 },
+      "labelTight":     { "fontSize": 11, "lineHeight": 13, "weight": 500, "letterSpacing": 1.1, "usage": 6 }
+    },
+    "heading": {
+      "xsmall":  { "fontSize": 17, "lineHeight": 24, "weight": 600, "styleName": "Heading / xsmall", "usage": 8 },
+      "default": { "fontSize": 21, "lineHeight": 26, "weight": 500, "family": "SF Pro Display", "styleName": "Heading / default", "usage": 2 },
+      "large":   { "fontSize": 23, "lineHeight": 29, "weight": 500, "family": "SF Pro Display", "styleName": "Heading / large (derived)", "usage": 1 },
+      "xlarge":  { "fontSize": 27, "lineHeight": 34, "weight": 500, "family": "SF Pro Display", "styleName": "Heading / xlarge (derived)", "usage": 1 },
+      "xxlarge": { "fontSize": 35, "lineHeight": 44, "weight": 500, "family": "SF Pro Display", "styleName": "Heading / xxlarge (derived)", "usage": 1 },
+      "pageTitleSemibold": { "fontSize": 35, "lineHeight": 41.8, "weight": 600, "family": "SF Pro Display", "usage": 13, "comment": "Used across the kit's own showcase headers." },
+      "hero":    { "fontSize": 52, "lineHeight": 56, "weight": 700, "letterSpacing": -0.31, "family": "SF Pro Display", "usage": 1 }
+    }
+  },
+
+  "spacing": {
+    "comment": "Core scale by usage (auto-layout gaps + paddings). The kit lives on 4/8 with 10 as a control-padding special.",
+    "scale": [4, 6, 8, 10, 12, 16, 24, 32, 40, 64],
+    "roles": {
+      "insideControls": { "value": 8, "comment": "Dominant padding (118 uses); 4 for tight chips (68 uses); 10 for control horizontal padding (48 uses)." },
+      "betweenRelatedItems": { "value": 8, "commentAlt": "6-10 range; 8 and 10 are the two most-used gaps (42/45 uses)." },
+      "betweenGroups": { "value": 16, "usage": 39 },
+      "betweenSections": { "value": 24, "usage": 27 },
+      "sectionMajor": { "value": 32, "usage": 8 },
+      "pageMargin": { "value": 64, "usage": 54, "comment": "Kit frames pad pages at 64; 40 appears for mid-size gutters." }
+    }
+  },
+
+  "radius": {
+    "sm": { "value": 3, "usage": 216, "comment": "THE Airtable radius — default on buttons, inputs, cards, menus. Dominant by an order of magnitude." },
+    "md": { "value": 5, "usage": 20, "comment": "Larger containers: modals, popovers." },
+    "lg": { "value": 6, "usage": 2, "comment": "Rare." },
+    "pill": { "value": 9999, "comment": "Full-round pills/avatars; appears as 100/9999 in the file (88 uses combined), including half-pill corner sets (100/0/0/100) on grouped controls." }
+  },
+
+  "shadow": {
+    "comment": "EXACT finding: the kit contains ZERO drop-shadow or inner-shadow effects across the entire file. Elevation is communicated with hairline borders and overlay scrims instead.",
+    "elevation": "none",
+    "borders": {
+      "default": { "color": "#e0e0e0", "width": 1, "usage": 14 },
+      "subtle": { "color": "#eeeeee", "width": 1, "usage": 7 },
+      "focusOrEmphasis": { "width": 2, "comment": "2px strokes appear 13x, typically focus/selection emphasis." }
+    },
+    "overlayScrims": {
+      "light": { "color": "#000000", "alpha": 0.10, "comment": "Hover/pressed tint layer." },
+      "modal": { "color": "#000000", "alpha": 0.25, "comment": "Modal backdrop scrim." }
+    }
+  },
+
+  "color": {
+    "text": {
+      "primary": { "value": "#333333", "styleName": "Dark", "usage": 785 },
+      "secondary": { "value": "#757575", "usage": 131, "comment": "Quiet/secondary text (derived: second-most-used fill, gray family)." },
+      "tertiary": { "value": "#898989", "usage": 17 },
+      "emphasisDark": { "value": "#424242", "styleName": "Dark gray 2", "usage": 43 },
+      "inverse": { "value": "#ffffff" },
+      "black": { "value": "#000000", "styleName": "Black", "usage": 15 }
+    },
+    "surface": {
+      "base": { "value": "#ffffff", "styleName": "White", "usage": 96 },
+      "subtle": { "value": "#fafafa", "usage": 2, "comment": "Near-white wash (derived)." },
+      "muted": { "value": "#f2f2f2", "styleName": "Light gray 2 (derived)", "usage": 59, "comment": "Toolbar/track/hover surface." },
+      "selectedTint": { "value": "#e9eef9", "usage": 17, "comment": "Blue-tinted selected-row/selected-item surface." }
+    },
+    "border": {
+      "default": { "value": "#e0e0e0", "styleName": "Light gray 4 (derived)" },
+      "subtle": { "value": "#eeeeee" }
+    },
+    "action": {
+      "primary": { "value": "#2d7ff9", "styleName": "blueBright", "usage": 24, "comment": "The Airtable blue — primary buttons, links, focus." },
+      "primaryDeep": { "value": "#1283da", "styleName": "blue", "comment": "Deeper blue variant." },
+      "danger": { "value": "#ef3061", "styleName": "red", "usage": 15 },
+      "dangerBright": { "value": "#f82b60", "styleName": "redBright" },
+      "success": { "value": "#20c933", "styleName": "greenBright" },
+      "successDeep": { "value": "#11af22", "styleName": "green" }
+    },
+    "accentPalette": {
+      "comment": "Airtable's full hue wheel as used in the kit: 'Bright' = saturated fill, 'Light2' = pastel chip tint, 'Dark1' = text-on-tint. Exact hexes as extracted.",
+      "yellow":  { "bright": "#fcb400", "light2": "#ffeab6", "light1": "#ffd66e", "dark1": "#b87503", "deepText": "#3b2501" },
+      "orange":  { "bright": "#ff6f2c", "light2": "#fee2d5", "light1": "#ffa981", "dark1": "#d74d26", "alt": "#f7653b" },
+      "red":     { "bright": "#f82b60", "light2": "#ffdce5", "dark1": "#ba1e45" },
+      "pink":    { "bright": "#ff08c2", "light2": "#ffdaf6", "light1": "#f99de2", "dark1": "#b2158b", "alt": "#e929ba" },
+      "purple":  { "bright": "#8b46ff", "light2": "#ede3fe", "light1": "#cdb0ff", "dark1": "#6b1cb0", "alt": "#7c39ed" },
+      "blue":    { "bright": "#2d7ff9", "light2": "#cfdfff", "light1": "#9cc7ff", "dark1": "#2750ae", "deepText": "#102046" },
+      "cyan":    { "bright": "#18bfff", "light2": "#d0f0fd", "light1": "#77d1f3", "dark1": "#0b76b7", "alt": "#01a9db" },
+      "teal":    { "bright": "#20d9d2", "light2": "#c2f5e9", "light1": "#72ddc3", "dark1": "#06a09b", "alt": "#02aaa4" },
+      "green":   { "bright": "#20c933", "light2": "#d1f7c4", "dark1": "#11af22", "deepText": "#0b1d05" },
+      "gray":    { "scale": ["#fafafa", "#f2f2f2", "#eeeeee", "#e0e0e0", "#898989", "#757575", "#666666", "#424242", "#333333", "#0f0f0f"] }
+    }
+  },
+
+  "informationDensity": {
+    "comment": "Derived from component bounding boxes and the dominant type/spacing values — this kit is a COMPACT, data-dense desktop system.",
+    "baseUiFontSize": 13,
+    "metaFontSize": 11,
+    "controlHeight": { "value": 32, "comment": "Standard height for buttons, selects, and inputs (most frequent full-control height); compact 24/28 variants exist." },
+    "controlHorizontalPadding": 10,
+    "innerGap": 8,
+    "hairlineBorders": 1,
+    "characteristics": [
+      "13px base UI text with 11px metadata — two sizes below typical web defaults",
+      "32px controls on an 8px grid; tight 3px radii keep corners near-square",
+      "No shadows: flat surfaces separated by #e0e0e0 hairlines and background shifts (#ffffff vs #f2f2f2)",
+      "Color does the talking: a 10-hue accent wheel with pastel tints for chips/badges against a strictly neutral gray chrome"
+    ]
+  }
+}
